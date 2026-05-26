@@ -18,7 +18,7 @@ def get_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-img = get_base64("assets/fundo.jpg")
+img = get_base64("fundo.jpg")
 
 page_bg = f"""
 <style>
