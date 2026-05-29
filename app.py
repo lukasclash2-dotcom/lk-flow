@@ -5,7 +5,7 @@ import base64
 # CONFIG
 # ==========================================
 st.set_page_config(
-    page_title="LK FLOW",
+    page_title="HOUND",
     page_icon="📈",
     layout="wide"
 )
@@ -17,7 +17,7 @@ if "modo" not in st.session_state:
     st.session_state.modo = None
 
 # ==========================================
-# BASE64
+# IMAGEM
 # ==========================================
 def get_base64(file):
     with open(file, "rb") as f:
@@ -29,7 +29,7 @@ img = get_base64("fundo.jpg")
 # ==========================================
 # CSS
 # ==========================================
-page_bg = f"""
+st.markdown(f"""
 <style>
 
 .stApp {{
@@ -45,8 +45,8 @@ page_bg = f"""
 }}
 
 .block-container {{
+    max-width: 850px;
     padding-top: 2rem;
-    max-width: 900px;
 }}
 
 html, body, [class*="css"] {{
@@ -54,63 +54,50 @@ html, body, [class*="css"] {{
     font-family: Arial;
 }}
 
-.stNumberInput input {{
-    background-color: rgba(20,20,20,0.65);
-    color: white;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.06);
-}}
-
-.stTextInput input {{
-    background-color: rgba(20,20,20,0.65);
-    color: white;
-    border-radius: 12px;
-    border: 1px solid rgba(255,255,255,0.06);
-}}
-
 .stButton > button {{
     width: 100%;
     height: 75px;
-    border-radius: 50px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(10,10,10,0.92);
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: rgba(20,20,20,0.78);
     color: white;
     font-size: 24px;
     font-weight: 600;
     transition: 0.3s;
     backdrop-filter: blur(10px);
-    box-shadow: 0px 0px 25px rgba(0,0,0,0.45);
 }}
 
 .stButton > button:hover {{
-    transform: scale(1.01);
-    border: 1px solid rgba(0,255,255,0.4);
-    box-shadow: 0px 0px 25px rgba(0,255,255,0.25);
+    border: 1px solid rgba(0,255,255,0.35);
+    box-shadow: 0px 0px 25px rgba(0,255,255,0.15);
+}}
+
+.stNumberInput input {{
+    background: rgba(20,20,20,0.7);
+    color: white;
+    border-radius: 15px;
 }}
 
 </style>
-"""
-
-st.markdown(page_bg, unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ==========================================
 # HERO
 # ==========================================
-st.markdown(f'''
+st.markdown(f"""
 <div style="
     position: relative;
-    border-radius: 25px;
+    border-radius: 30px;
     overflow: hidden;
     background: rgba(0,0,0,0.85);
-    border: 1px solid rgba(0,255,255,0.08);
-    box-shadow: 0px 0px 30px rgba(0,0,0,0.45);
+    border: 1px solid rgba(255,255,255,0.08);
 ">
 
     <img src="data:image/jpg;base64,{img}" style="
         width:100%;
-        height:780px;
+        height:650px;
         object-fit:cover;
-        opacity:0.28;
+        opacity:0.32;
     ">
 
     <div style="
@@ -123,33 +110,31 @@ st.markdown(f'''
         flex-direction:column;
         justify-content:center;
         align-items:center;
-        text-align:center;
-        padding:40px;
     ">
 
         <h4 style="
-            color:#cfcfcf;
+            color:#bdbdbd;
             letter-spacing:10px;
             font-weight:300;
-            margin-bottom:20px;
+            margin-bottom:15px;
         ">
             abertura
         </h4>
 
         <h1 style="
-            font-size:130px;
+            font-size:120px;
             font-weight:900;
             color:white;
             letter-spacing:10px;
-            margin-top:-20px;
+            margin-top:-10px;
         ">
             HOUND
         </h1>
 
         <p style="
             color:#9ca3af;
-            margin-top:-10px;
             font-size:18px;
+            margin-top:-10px;
         ">
             Institutional opening flow
         </p>
@@ -157,7 +142,7 @@ st.markdown(f'''
     </div>
 
 </div>
-''', unsafe_allow_html=True)
+""", unsafe_allow_html=True)
 
 # ==========================================
 # ESCOLHA
@@ -167,15 +152,12 @@ if st.session_state.modo is None:
     st.markdown("<br><br>", unsafe_allow_html=True)
 
     st.markdown("""
-
     <div style="
         background: rgba(15,15,15,0.72);
         border: 1px solid rgba(255,255,255,0.08);
         border-radius: 30px;
         padding: 40px;
-        margin-top: 30px;
-        backdrop-filter: blur(18px);
-        box-shadow: 0px 0px 35px rgba(0,0,0,0.45);
+        backdrop-filter: blur(20px);
     ">
 
     <p style="
@@ -188,7 +170,7 @@ if st.session_state.modo is None:
 
     <h1 style="
         color:white;
-        font-size:42px;
+        font-size:48px;
     ">
     Há notícia 3⭐ no Brasil às 09h hoje?
     </h1>
@@ -197,12 +179,12 @@ if st.session_state.modo is None:
         color:#8b8b8b;
         font-size:18px;
     ">
-    Isso define se o cálculo usa a fórmula macro
-    (-VIX + FEF + CL) ou ADRs.
+    Isso define se o cálculo usa:
+    (-VIX + FEF + CL)
+    ou ADRs.
     </p>
 
     </div>
-
     """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -211,41 +193,30 @@ if st.session_state.modo is None:
 
     with c1:
 
-        if st.button("Não", use_container_width=True):
+        if st.button("Não"):
 
-            st.session_state.modo = "SEM NOTÍCIA"
+            st.session_state.modo = "macro"
             st.rerun()
 
     with c2:
 
-        if st.button("Sim", use_container_width=True):
+        if st.button("Sim"):
 
-            st.session_state.modo = "COM NOTÍCIA"
+            st.session_state.modo = "adr"
             st.rerun()
 
 # ==========================================
-# SEM NOTÍCIA
+# MACRO
 # ==========================================
-elif st.session_state.modo == "SEM NOTÍCIA":
+elif st.session_state.modo == "macro":
 
     st.markdown("""
-
     <div style="
         background: rgba(15,15,15,0.72);
-        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 30px;
         padding: 40px;
-        margin-top: 30px;
-        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255,255,255,0.08);
     ">
-
-    <p style="
-        color:#8b8b8b;
-        letter-spacing:4px;
-        font-size:13px;
-    ">
-    ENTRADA MANUAL
-    </p>
 
     <h1 style="
         color:white;
@@ -255,7 +226,6 @@ elif st.session_state.modo == "SEM NOTÍCIA":
     </h1>
 
     </div>
-
     """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -266,87 +236,95 @@ elif st.session_state.modo == "SEM NOTÍCIA":
         vix = st.number_input("VIX", value=0.0)
 
     with c2:
-        fef2 = st.number_input("FEF", value=0.0)
+        fef = st.number_input("FEF", value=0.0)
 
     with c3:
-        cl1 = st.number_input("CL", value=0.0)
+        cl = st.number_input("CL", value=0.0)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    gerar = st.button("Gerar leitura")
+    if st.button("Gerar leitura"):
 
-    if gerar:
+        resultado = (-vix) + fef + cl
 
-        resultado = (-vix) + fef2 + cl1
-
-        intensidade = min(abs(resultado) * 20, 100)
+        forca = min(abs(resultado) * 20, 100)
 
         if resultado >= 4.5:
             classificacao = "COMPRA FORTE"
+            fluxo = "FLUXO COMPRADOR"
+            vies = "VIÉS COMPRADOR"
+
         elif resultado >= 2.5:
             classificacao = "COMPRA MODERADA"
+            fluxo = "FLUXO COMPRADOR"
+            vies = "VIÉS COMPRADOR"
+
         elif resultado >= 1.5:
             classificacao = "COMPRA LEVE"
+            fluxo = "FLUXO COMPRADOR"
+            vies = "VIÉS COMPRADOR"
+
         elif resultado <= -4.5:
             classificacao = "VENDA FORTE"
+            fluxo = "FLUXO VENDEDOR"
+            vies = "VIÉS VENDEDOR"
+
         elif resultado <= -2.5:
             classificacao = "VENDA MODERADA"
+            fluxo = "FLUXO VENDEDOR"
+            vies = "VIÉS VENDEDOR"
+
         elif resultado <= -1.5:
             classificacao = "VENDA LEVE"
+            fluxo = "FLUXO VENDEDOR"
+            vies = "VIÉS VENDEDOR"
+
         else:
             classificacao = "LATERAL"
-
-        if resultado > 0:
-            vies = "VIÉS COMPRADOR"
-            fluxo = "FLUXO COMPRADOR"
-        elif resultado < 0:
-            vies = "VIÉS VENDEDOR"
-            fluxo = "FLUXO VENDEDOR"
-        else:
-            vies = "MERCADO LATERAL"
             fluxo = "FLUXO INDEFINIDO"
+            vies = "MERCADO LATERAL"
 
-        st.markdown("---")
+        st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown(f"""
         <div style="
-            background: rgba(0,0,0,0.72);
-            border-radius:25px;
-            padding:40px;
-            border:1px solid rgba(255,255,255,0.08);
+            background: rgba(10,10,10,0.82);
+            border-radius: 30px;
+            padding: 50px;
             text-align:center;
+            border:1px solid rgba(255,255,255,0.08);
         ">
 
             <h3 style="
                 color:#9ca3af;
-                letter-spacing:4px;
+                letter-spacing:5px;
             ">
-                RESULTADO
+            RESULTADO
             </h3>
 
             <h1 style="
                 color:white;
-                font-size:95px;
+                font-size:90px;
             ">
-                {round(resultado,2)}
+            {round(resultado,2)}
             </h1>
 
             <h2 style="
-                color:#00c8ff;
+                color:#00d5ff;
             ">
-                {vies}
+            {vies}
             </h2>
 
             <h3 style="color:white;">
-                {classificacao}
+            {classificacao}
             </h3>
 
             <h4 style="color:#9ca3af;">
-                FORÇA: {round(intensidade)}%
+            FORÇA: {round(forca)}%
             </h4>
 
             <h4 style="color:#9ca3af;">
-                {fluxo}
+            {fluxo}
             </h4>
 
         </div>
@@ -360,28 +338,17 @@ elif st.session_state.modo == "SEM NOTÍCIA":
         st.rerun()
 
 # ==========================================
-# COM NOTÍCIA
+# ADR
 # ==========================================
-elif st.session_state.modo == "COM NOTÍCIA":
+elif st.session_state.modo == "adr":
 
     st.markdown("""
-
     <div style="
         background: rgba(15,15,15,0.72);
-        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 30px;
         padding: 40px;
-        margin-top: 30px;
-        backdrop-filter: blur(18px);
+        border: 1px solid rgba(255,255,255,0.08);
     ">
-
-    <p style="
-        color:#8b8b8b;
-        letter-spacing:4px;
-        font-size:13px;
-    ">
-    ENTRADA MANUAL
-    </p>
 
     <h1 style="
         color:white;
@@ -391,7 +358,6 @@ elif st.session_state.modo == "COM NOTÍCIA":
     </h1>
 
     </div>
-
     """, unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
@@ -410,9 +376,7 @@ elif st.session_state.modo == "COM NOTÍCIA":
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    gerar = st.button("Gerar leitura")
-
-    if gerar:
+    if st.button("Gerar leitura"):
 
         resultado = (
             vale +
@@ -423,74 +387,84 @@ elif st.session_state.modo == "COM NOTÍCIA":
             bolsy
         )
 
-        intensidade = min(abs(resultado) * 20, 100)
+        forca = min(abs(resultado) * 20, 100)
 
         if resultado >= 4.5:
             classificacao = "COMPRA FORTE"
+            fluxo = "FLUXO COMPRADOR"
+            vies = "VIÉS COMPRADOR"
+
         elif resultado >= 2.5:
             classificacao = "COMPRA MODERADA"
+            fluxo = "FLUXO COMPRADOR"
+            vies = "VIÉS COMPRADOR"
+
         elif resultado >= 1.5:
             classificacao = "COMPRA LEVE"
+            fluxo = "FLUXO COMPRADOR"
+            vies = "VIÉS COMPRADOR"
+
         elif resultado <= -4.5:
             classificacao = "VENDA FORTE"
+            fluxo = "FLUXO VENDEDOR"
+            vies = "VIÉS VENDEDOR"
+
         elif resultado <= -2.5:
             classificacao = "VENDA MODERADA"
+            fluxo = "FLUXO VENDEDOR"
+            vies = "VIÉS VENDEDOR"
+
         elif resultado <= -1.5:
             classificacao = "VENDA LEVE"
+            fluxo = "FLUXO VENDEDOR"
+            vies = "VIÉS VENDEDOR"
+
         else:
             classificacao = "LATERAL"
-
-        if resultado > 0:
-            vies = "VIÉS COMPRADOR"
-            fluxo = "FLUXO COMPRADOR"
-        elif resultado < 0:
-            vies = "VIÉS VENDEDOR"
-            fluxo = "FLUXO VENDEDOR"
-        else:
-            vies = "MERCADO LATERAL"
             fluxo = "FLUXO INDEFINIDO"
+            vies = "MERCADO LATERAL"
 
-        st.markdown("---")
+        st.markdown("<br>", unsafe_allow_html=True)
 
         st.markdown(f"""
         <div style="
-            background: rgba(0,0,0,0.72);
-            border-radius:25px;
-            padding:40px;
-            border:1px solid rgba(255,255,255,0.08);
+            background: rgba(10,10,10,0.82);
+            border-radius: 30px;
+            padding: 50px;
             text-align:center;
+            border:1px solid rgba(255,255,255,0.08);
         ">
 
             <h3 style="
                 color:#9ca3af;
-                letter-spacing:4px;
+                letter-spacing:5px;
             ">
-                RESULTADO
+            RESULTADO
             </h3>
 
             <h1 style="
                 color:white;
-                font-size:95px;
+                font-size:90px;
             ">
-                {round(resultado,2)}
+            {round(resultado,2)}
             </h1>
 
             <h2 style="
-                color:#00c8ff;
+                color:#00d5ff;
             ">
-                {vies}
+            {vies}
             </h2>
 
             <h3 style="color:white;">
-                {classificacao}
+            {classificacao}
             </h3>
 
             <h4 style="color:#9ca3af;">
-                FORÇA: {round(intensidade)}%
+            FORÇA: {round(forca)}%
             </h4>
 
             <h4 style="color:#9ca3af;">
-                {fluxo}
+            {fluxo}
             </h4>
 
         </div>
