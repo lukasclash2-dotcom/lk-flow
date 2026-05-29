@@ -1,24 +1,26 @@
 import streamlit as st
 import base64
 
-# ==========================================
+# ==================================================
 # CONFIG
-# ==========================================
+# ==================================================
+
 st.set_page_config(
-    page_title="HOUND",
-    page_icon="📈",
+    page_title="LK FLOW",
     layout="wide"
 )
 
-# ==========================================
+# ==================================================
 # SESSION
-# ==========================================
+# ==================================================
+
 if "modo" not in st.session_state:
     st.session_state.modo = None
 
-# ==========================================
+# ==================================================
 # IMAGEM
-# ==========================================
+# ==================================================
+
 def get_base64(file):
     with open(file, "rb") as f:
         data = f.read()
@@ -26,9 +28,10 @@ def get_base64(file):
 
 img = get_base64("fundo.jpg")
 
-# ==========================================
+# ==================================================
 # CSS
-# ==========================================
+# ==================================================
+
 st.markdown(f"""
 <style>
 
@@ -45,7 +48,7 @@ st.markdown(f"""
 }}
 
 .block-container {{
-    max-width: 850px;
+    max-width: 900px;
     padding-top: 2rem;
 }}
 
@@ -59,7 +62,7 @@ html, body, [class*="css"] {{
     height: 75px;
     border-radius: 20px;
     border: 1px solid rgba(255,255,255,0.08);
-    background: rgba(20,20,20,0.78);
+    background: rgba(15,15,15,0.72);
     color: white;
     font-size: 24px;
     font-weight: 600;
@@ -69,7 +72,7 @@ html, body, [class*="css"] {{
 
 .stButton > button:hover {{
     border: 1px solid rgba(0,255,255,0.35);
-    box-shadow: 0px 0px 25px rgba(0,255,255,0.15);
+    box-shadow: 0px 0px 20px rgba(0,255,255,0.15);
 }}
 
 .stNumberInput input {{
@@ -81,9 +84,10 @@ html, body, [class*="css"] {{
 </style>
 """, unsafe_allow_html=True)
 
-# ==========================================
+# ==================================================
 # HERO
-# ==========================================
+# ==================================================
+
 st.markdown(f"""
 <div style="
     position: relative;
@@ -97,7 +101,7 @@ st.markdown(f"""
         width:100%;
         height:650px;
         object-fit:cover;
-        opacity:0.32;
+        opacity:0.28;
     ">
 
     <div style="
@@ -110,6 +114,7 @@ st.markdown(f"""
         flex-direction:column;
         justify-content:center;
         align-items:center;
+        text-align:center;
     ">
 
         <h4 style="
@@ -128,7 +133,7 @@ st.markdown(f"""
             letter-spacing:10px;
             margin-top:-10px;
         ">
-            HOUND
+            LK FLOW
         </h1>
 
         <p style="
@@ -144,9 +149,10 @@ st.markdown(f"""
 </div>
 """, unsafe_allow_html=True)
 
-# ==========================================
-# ESCOLHA
-# ==========================================
+# ==================================================
+# MENU
+# ==================================================
+
 if st.session_state.modo is None:
 
     st.markdown("<br><br>", unsafe_allow_html=True)
@@ -154,10 +160,10 @@ if st.session_state.modo is None:
     st.markdown("""
     <div style="
         background: rgba(15,15,15,0.72);
-        border: 1px solid rgba(255,255,255,0.08);
         border-radius: 30px;
         padding: 40px;
-        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.08);
+        backdrop-filter: blur(15px);
     ">
 
     <p style="
@@ -192,22 +198,19 @@ if st.session_state.modo is None:
     c1, c2 = st.columns(2)
 
     with c1:
-
         if st.button("Não"):
-
             st.session_state.modo = "macro"
             st.rerun()
 
     with c2:
-
         if st.button("Sim"):
-
             st.session_state.modo = "adr"
             st.rerun()
 
-# ==========================================
+# ==================================================
 # MACRO
-# ==========================================
+# ==================================================
+
 elif st.session_state.modo == "macro":
 
     st.markdown("""
@@ -333,13 +336,13 @@ elif st.session_state.modo == "macro":
     st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("← Voltar"):
-
         st.session_state.modo = None
         st.rerun()
 
-# ==========================================
+# ==================================================
 # ADR
-# ==========================================
+# ==================================================
+
 elif st.session_state.modo == "adr":
 
     st.markdown("""
@@ -473,6 +476,5 @@ elif st.session_state.modo == "adr":
     st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("← Voltar"):
-
         st.session_state.modo = None
         st.rerun()
