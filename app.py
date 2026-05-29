@@ -1,5 +1,6 @@
 import streamlit as st
 import base64
+import os  # [ADIÇÃO NECESSÁRIA] Para lidar com caminhos de pastas
 
 # ==================================================
 # CONFIG
@@ -18,7 +19,7 @@ if "modo" not in st.session_state:
     st.session_state.modo = None
 
 # ==================================================
-# IMAGEM
+# IMAGEM [CORREÇÃO APLICADA AQUI]
 # ==================================================
 
 def get_base64(file):
@@ -26,7 +27,13 @@ def get_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-img = get_base64("fundo.jpg")
+# -- AJUSTE DO CAMINHO --
+# os.path.dirname(__file__) pega a pasta onde este app.py está salvo.
+# os.path.join junta com 'assets' e 'fundo.jpg' de forma segura.
+caminho_completo = os.path.join(os.path.dirname(__file__), "assets", "fundo.jpg")
+
+# Agora usamos o caminho completo corrigido
+img = get_base64(caminho_completo)
 
 # ==================================================
 # CSS
