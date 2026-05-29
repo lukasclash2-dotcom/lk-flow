@@ -90,24 +90,13 @@ html, body, [class*="css"] {{
 # HERO (CORRIGIDO: Sem quebras de linha nas tags)
 # ==================================================
 
-st.markdown(f"""
-<div style="position: relative; border-radius: 30px; overflow: hidden; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.08);">
+# ==================================================
+# HERO (CORRIGIDO DEFINITIVO: Sem espaços em branco)
+# ==================================================
 
-    <img src="data:image/jpg;base64,{img}" style="width:100%; height:650px; object-fit:cover; opacity:0.28;">
+html_hero = f"""<div style="position: relative; border-radius: 30px; overflow: hidden; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.08);"><img src="data:image/jpg;base64,{img}" style="width:100%; height:650px; object-fit:cover; opacity:0.28;"><div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><h4 style="color:#bdbdbd; letter-spacing:10px; font-weight:300; margin-bottom:15px;">abertura</h4><h1 style="font-size:120px; font-weight:900; color:white; letter-spacing:10px; margin-top:-10px;">LK FLOW</h1><p style="color:#9ca3af; font-size:18px; margin-top:-10px;">Institutional opening flow</p></div></div>"""
 
-    <div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;">
-
-        <h4 style="color:#bdbdbd; letter-spacing:10px; font-weight:300; margin-bottom:15px;">abertura</h4>
-
-        <h1 style="font-size:120px; font-weight:900; color:white; letter-spacing:10px; margin-top:-10px;">LK FLOW</h1>
-
-        <p style="color:#9ca3af; font-size:18px; margin-top:-10px;">Institutional opening flow</p>
-
-    </div>
-
-</div>
-""", unsafe_allow_html=True)
-
+st.markdown(html_hero, unsafe_allow_html=True)
 # ==================================================
 # MENU
 # ==================================================
