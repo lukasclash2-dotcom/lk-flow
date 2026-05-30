@@ -7,7 +7,7 @@ import os
 # ==================================================
 
 st.set_page_config(
-    page_title="LK FLOW",
+    page_title="LaVinceri",
     layout="wide"
 )
 
@@ -77,10 +77,27 @@ html, body, [class*="css"] {{
     box-shadow: 0px 0px 20px rgba(0,255,255,0.15);
 }}
 
-.stNumberInput input {{
-    background: rgba(20,20,20,0.7);
+/* === ESTILO PREMIUM PARA OS INPUTS === */
+.stNumberInput > div > div > input {{
+    background: rgba(15,15,15,0.8);
     color: white;
     border-radius: 15px;
+    border: 1px solid rgba(255,255,255,0.1);
+    text-align: center; /* Centraliza os números */
+    font-size: 18px;
+    transition: 0.3s;
+}}
+
+/* Efeito de brilho ao clicar no campo */
+.stNumberInput > div > div > input:focus {{
+    border: 1px solid rgba(0,255,255,0.5);
+    box-shadow: 0px 0px 15px rgba(0,255,255,0.2);
+}}
+
+/* Esconde os botões de + e - para um visual mais limpo */
+[data-testid="stNumberInputStepUp"],
+[data-testid="stNumberInputStepDown"] {{
+    display: none;
 }}
 
 </style>
@@ -94,7 +111,7 @@ html, body, [class*="css"] {{
 # HERO (CORRIGIDO DEFINITIVO: Sem espaços em branco)
 # ==================================================
 
-html_hero = f"""<div style="position: relative; border-radius: 30px; overflow: hidden; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.08);"><img src="data:image/jpg;base64,{img}" style="width:100%; height:650px; object-fit:cover; opacity:0.28;"><div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><h4 style="color:#bdbdbd; letter-spacing:10px; font-weight:300; margin-bottom:15px;">abertura</h4><h1 style="font-size:120px; font-weight:900; color:white; letter-spacing:10px; margin-top:-10px;">LK FLOW</h1><p style="color:#9ca3af; font-size:18px; margin-top:-10px;">Institutional opening flow</p></div></div>"""
+html_hero = f"""<div style="position: relative; border-radius: 30px; overflow: hidden; background: rgba(0,0,0,0.85); border: 1px solid rgba(255,255,255,0.08);"><img src="data:image/jpg;base64,{img}" style="width:100%; height:650px; object-fit:cover; opacity:0.28;"><div style="position:absolute; top:0; left:0; width:100%; height:100%; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center;"><h4 style="color:#bdbdbd; letter-spacing:10px; font-weight:300; margin-bottom:15px;">abertura</h4><h1 style="font-size:120px; font-weight:900; color:white; letter-spacing:10px; margin-top:-10px;">LaVinceri</h1><p style="color:#9ca3af; font-size:18px; margin-top:-10px;">LaVinceri Abertura Institutional</p></div></div>"""
 
 st.markdown(html_hero, unsafe_allow_html=True)
 # ==================================================
@@ -121,13 +138,17 @@ if st.session_state.modo is None:
 
     c1, c2 = st.columns(2)
 
+    c1, c2 = st.columns(2)
+
     with c1:
-        if st.button("Não"):
+        # Adicionamos o use_container_width=True
+        if st.button("Não", use_container_width=True):
             st.session_state.modo = "macro"
             st.rerun()
 
     with c2:
-        if st.button("Sim"):
+        # Adicionamos o use_container_width=True
+        if st.button("Sim", use_container_width=True):
             st.session_state.modo = "adr"
             st.rerun()
 
@@ -147,18 +168,27 @@ elif st.session_state.modo == "macro":
 
     c1, c2, c3 = st.columns(3)
 
+    c1, c2, c3 = st.columns(3)
+
     with c1:
-        vix = st.number_input("VIX", value=0.0)
+        vix = st.number_input("VIX", value=None, placeholder="0.0")
 
     with c2:
-        fef = st.number_input("FEF", value=0.0)
+        fef = st.number_input("FEF", value=None, placeholder="0.0")
 
     with c3:
-        cl = st.number_input("CL", value=0.0)
+        cl = st.number_input("CL", value=None, placeholder="0.0")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    if st.button("Gerar leitura"):
+    if st.button("Gerar leitura", use_container_width=True):
+        
+        # Como deixamos vazio, precisamos garantir que espaços em branco sejam lidos como 0
+        v_vix = vix if vix is not None else 0.0
+        v_fef = fef if fef is not None else 0.0
+        v_cl = cl if cl is not None else 0.0
+
+        resultado = (-v_vix) + v_fef + v_cl
 
         resultado = (-vix) + fef + cl
 
@@ -198,7 +228,7 @@ elif st.session_state.modo == "macro":
         st.markdown(f"""
         <div style="background: rgba(10,10,10,0.82); border-radius: 30px; padding: 50px; text-align:center; border:1px solid rgba(255,255,255,0.08);">
             <h3 style="color:#9ca3af; letter-spacing:5px;">RESULTADO</h3>
-            <h1 style="color:white; font-size:90px;">{round(resultado,2)}</h1>
+            <h1 style="color:white; font-size:90px;">{round(resultado,2)}%</h1>
             <h2 style="color:#00d5ff;">{vies}</h2>
             <h3 style="color:white;">{classificacao}</h3>
             <h4 style="color:#9ca3af;">FORÇA: {round(forca)}%</h4>
@@ -228,21 +258,31 @@ elif st.session_state.modo == "adr":
 
     c1, c2 = st.columns(2)
 
+    c1, c2 = st.columns(2)
+
     with c1:
-        vale = st.number_input("VALE", value=0.0)
-        itub = st.number_input("ITUB", value=0.0)
-        bbd = st.number_input("BBD", value=0.0)
+        vale = st.number_input("VALE", value=None, placeholder="0.0")
+        itub = st.number_input("ITUB", value=None, placeholder="0.0")
+        bbd = st.number_input("BBD", value=None, placeholder="0.0")
 
     with c2:
-        pbr = st.number_input("PBR", value=0.0)
-        bdory = st.number_input("BDORY", value=0.0)
-        bolsy = st.number_input("BOLSY", value=0.0)
+        pbr = st.number_input("PBR", value=None, placeholder="0.0")
+        bdory = st.number_input("BDORY", value=None, placeholder="0.0")
+        bolsy = st.number_input("BOLSY", value=None, placeholder="0.0")
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    if st.button("Gerar leitura"):
+    if st.button("Gerar leitura", use_container_width=True):
 
-        resultado = vale + pbr + itub + bdory + bbd + bolsy
+        # Transforma os campos vazios em 0 para não dar erro no cálculo
+        v_vale = vale if vale is not None else 0.0
+        v_itub = itub if itub is not None else 0.0
+        v_bbd = bbd if bbd is not None else 0.0
+        v_pbr = pbr if pbr is not None else 0.0
+        v_bdory = bdory if bdory is not None else 0.0
+        v_bolsy = bolsy if bolsy is not None else 0.0
+
+        resultado = v_vale + v_pbr + v_itub + v_bdory + v_bbd + v_bolsy
 
         forca = min(abs(resultado) * 20, 100)
 
@@ -275,20 +315,29 @@ elif st.session_state.modo == "adr":
             fluxo = "FLUXO INDEFINIDO"
             vies = "MERCADO LATERAL"
 
+# --- Lógica de Confluência ---
+        dicionario_adrs = {
+            "VALE": v_vale, "ITUB": v_itub, "BBD": v_bbd,
+            "PBR": v_pbr, "BDORY": v_bdory, "BOLSY": v_bolsy
+        }
+        
+        positivos = [nome for nome, valor in dicionario_adrs.items() if valor > 0]
+        negativos = [nome for nome, valor in dicionario_adrs.items() if valor < 0]
+        
+        html_confluencia = ""
+        if len(positivos) >= 4:
+            texto = f"CONFLUÊNCIA: {', '.join(positivos)} na mesma direção (Alta)"
+            html_confluencia = f'<h4 style="color:#ffd700; margin-top:25px; font-weight:600; letter-spacing: 1px;">⭐ {texto}</h4>'
+        elif len(negativos) >= 4:
+            texto = f"CONFLUÊNCIA: {', '.join(negativos)} na mesma direção (Baixa)"
+            html_confluencia = f'<h4 style="color:#ffd700; margin-top:25px; font-weight:600; letter-spacing: 1px;">⭐ {texto}</h4>'
+
         st.markdown("<br>", unsafe_allow_html=True)
 
-        st.markdown(f"""
-        <div style="background: rgba(10,10,10,0.82); border-radius: 30px; padding: 50px; text-align:center; border:1px solid rgba(255,255,255,0.08);">
-            <h3 style="color:#9ca3af; letter-spacing:5px;">RESULTADO</h3>
-            <h1 style="color:white; font-size:90px;">{round(resultado,2)}</h1>
-            <h2 style="color:#00d5ff;">{vies}</h2>
-            <h3 style="color:white;">{classificacao}</h3>
-            <h4 style="color:#9ca3af;">FORÇA: {round(forca)}%</h4>
-            <h4 style="color:#9ca3af;">{fluxo}</h4>
-        </div>
-        """, unsafe_allow_html=True)
+        # SUBSTITUA O ST.MARKDOWN ABAIXO POR ESTA LINHA ÚNICA (SEM QUEBRAS):
+        st.markdown(f"""<div style="background: rgba(10,10,10,0.82); border-radius: 30px; padding: 50px; text-align:center; border:1px solid rgba(255,255,255,0.08);"><h3 style="color:#9ca3af; letter-spacing:5px;">RESULTADO</h3><h1 style="color:white; font-size:90px;">{round(resultado,2)}%</h1><h2 style="color:#00d5ff;">{vies}</h2><h3 style="color:white;">{classificacao}</h3><h4 style="color:#9ca3af;">FORÇA: {round(forca)}%</h4><h4 style="color:#9ca3af;">{fluxo}</h4>{html_confluencia}</div>""", unsafe_allow_html=True)
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
     if st.button("← Voltar"):
         st.session_state.modo = None
