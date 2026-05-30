@@ -27,7 +27,7 @@ def get_base64(file):
         data = f.read()
     return base64.b64encode(data).decode()
 
-caminho_completo = os.path.join(os.path.dirname(__file__), "assets", "fundo.jpg")
+caminho_completo = os.path.join(os.path.dirname(__file__), "fundo.jpg")
 img = get_base64(caminho_completo)
 
 # ==================================================
