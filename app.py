@@ -95,10 +95,24 @@ html, body, [class*="css"] {{
 }}
 
 /* Esconde os botões de + e - para um visual mais limpo */
-[data-testid="stNumberInputStepUp"],
-[data-testid="stNumberInputStepDown"] {{
-    display: none;
-}}
+    [data-testid="stNumberInputStepUp"],
+    [data-testid="stNumberInputStepDown"] {{
+        display: none;
+    }}
+
+    /* === AJUSTES PARA CELULAR (RESPONSIVIDADE) === */
+    @media (max-width: 600px) {{
+        .block-container {{ 
+            padding-left: 10px !important; 
+            padding-right: 10px !important; 
+        }}
+        div[style*="padding: 50px"] {{ 
+            padding: 20px !important; 
+        }}
+        h1 {{ 
+            font-size: 50px !important; 
+        }}
+    }}
 
 </style>
 """, unsafe_allow_html=True)
