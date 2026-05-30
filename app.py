@@ -106,12 +106,14 @@ html, body, [class*="css"] {{
             padding-left: 10px !important; 
             padding-right: 10px !important; 
         }}
-        div[style*="padding: 50px"] {{ 
-            padding: 20px !important; 
+        /* Alvo ampliado: pega tanto o de 40px quanto o de 50px */
+        div[style*="padding: 40px"], div[style*="padding: 50px"] {{ 
+            padding: 15px !important; 
+            border-radius: 15px !important;
         }}
-        h1 {{ 
-            font-size: 50px !important; 
-        }}
+        /* Reduz tamanho de h1 e h2 para não quebrar a linha */
+        h1 {{ font-size: 30px !important; line-height: 1.2 !important; }}
+        h2 {{ font-size: 20px !important; }}
     }}
 
 </style>
