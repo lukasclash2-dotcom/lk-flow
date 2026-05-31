@@ -66,10 +66,26 @@ if img:
         color: white !important;
         transition: 0.3s;
     }}
-    [data-testid="stSidebar"] button:hover {{
-        background: rgba(0, 213, 255, 0.15) !important;
-        border: 1px solid rgba(0, 213, 255, 0.5) !important;
+
+    /* --- INÍCIO DO NOVO CÓDIGO GLASSMORPHISM --- */
+    
+    /* Glassmorphism para o formulário de login */
+    [data-testid="stForm"] {{
+        background: rgba(10, 10, 10, 0.4) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 20px !important;
+        padding: 30px !important;
     }}
+
+    /* Ajuste das caixas de input dentro do login */
+    [data-testid="stForm"] input {{
+        background: rgba(255, 255, 255, 0.05) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        color: white !important;
+    }}
+
+    /* --- FIM DO NOVO CÓDIGO --- */
 
     /* Botões Principais (Página) */
     .stButton > button {{
@@ -78,19 +94,6 @@ if img:
         color: white; font-size: 24px; font-weight: 600; transition: 0.3s;
         backdrop-filter: blur(10px);
     }}
-    .stButton > button:hover {{
-        border: 1px solid rgba(0,255,255,0.35); box-shadow: 0px 0px 20px rgba(0,255,255,0.15);
-    }}
-
-    /* Inputs de Número */
-    .stNumberInput > div > div > input {{
-        background: rgba(15,15,15,0.8); color: white; border-radius: 15px;
-        border: 1px solid rgba(255,255,255,0.1); text-align: center; font-size: 18px; transition: 0.3s;
-    }}
-    .stNumberInput > div > div > input:focus {{
-        border: 1px solid rgba(0,255,255,0.5); box-shadow: 0px 0px 15px rgba(0,255,255,0.2);
-    }}
-    [data-testid="stNumberInputStepUp"], [data-testid="stNumberInputStepDown"] {{ display: none; }}
     </style>
     """, unsafe_allow_html=True)
 
