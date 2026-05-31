@@ -1,0 +1,24 @@
+cookie:
+  expiry_days: 1
+  key: assinatura_secreta_aleatoria
+  name: cookie_lavinceri
+credentials:
+  usernames:
+    Duda01:
+      email: dudafernanda2206@gmail.com
+      name: Eduarda Andrade
+      password: $2b$12$LfQWiRtJCk9xdWzCCtdkRO/Z.WWSDkmT9I5Pe63JzWLreZB1VbJPK
+    admin:
+      email: contato@lavinceri.com
+      name: Diretor LaVinceri
+      password: $2b$12$1zCeISlWjGbts5QLScff5up9/br6Dr.p4.RAc88yXJblzssjukQH6
+    lukas8:
+      email: lukasclash2@gmail.com
+      first_name: Lucas
+      last_name: andrade
+      logged_in: false
+      password: $2b$12$AUubaU1O3wjLgNuOAptzEOmyzrAQUeO6Stu7/gv/1ivz1C554Ey/a
+      roles: null
+preauthorized:
+  emails:
+  - email_permitido@gmail.com
