@@ -2,3 +2,5 @@ yfinance
 plotly
 pandas
 streamlit-autorefresh
+streamlit-authenticator
+pyyaml
