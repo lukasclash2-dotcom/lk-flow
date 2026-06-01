@@ -4,27 +4,49 @@ import streamlit as st
 import yfinance as yf
 import plotly.graph_objects as go
 import numpy as np
+import pandas as pd
 from streamlit_autorefresh import st_autorefresh
 import time
 import yaml
 from yaml.loader import SafeLoader
 import streamlit_authenticator as stauth
-import math  # Essencial para o cálculo da rotação
+import math
+from streamlit_js_eval import streamlit_js_eval  # Import necessário
 
-# Inicializa o estado da câmera para a rotação automática
+# ==================================================
+# CONFIGURAÇÕES DE INICIALIZAÇÃO
+# ==================================================
+st.set_page_config(page_title="LaVinceri", layout="wide")
+
+# Inicializa o estado da câmera
 if "camera_angle" not in st.session_state:
     st.session_state.camera_angle = 0.0
 
-# ==================================================
-# 1. CONFIGURAÇÕES INICIAIS
-# ==================================================
-st.set_page_config(page_title="LaVinceri", layout="wide")
+# Inicializa detecção de dispositivo
+if "is_mobile" not in st.session_state:
+    width = streamlit_js_eval(js_expressions='window.innerWidth', key='WIDTH', want_output=True)
+    if width:
+        st.session_state.is_mobile = width < 768
+    else:
+        st.session_state.is_mobile = False
 
 if "modo" not in st.session_state:
     st.session_state.modo = None
 
+# Função de carregamento de config otimizada
+@st.cache_resource
+def carregar_config():
+    try:
+        with open('config.yaml', 'r') as file:
+            return yaml.load(file, Loader=SafeLoader)
+    except FileNotFoundError:
+        st.error("Erro: Arquivo 'config.yaml' não encontrado.")
+        st.stop()
+
+config = carregar_config()
+
 # ==================================================
-# 2. CARREGAMENTO DE IMAGEM E CSS
+# 2. CARREGAMENTO DE IMAGEM E CSS (CSS ATUALIZADO)
 # ==================================================
 def get_base64(file):
     try:
@@ -51,6 +73,14 @@ if img:
     .block-container {{ max-width: 900px; padding-top: 2rem; }}
     html, body, [class*="css"] {{ color: white; font-family: Arial; }}
 
+    /* REGRAS PARA CELULAR E TABLET */
+    @media (max-width: 768px) {{
+        h1 {{ font-size: 28px !important; letter-spacing: 2px !important; }}
+        h4 {{ font-size: 14px !important; }}
+        .stButton > button {{ height: 60px !important; font-size: 16px !important; }}
+        .block-container {{ padding: 1rem !important; }}
+    }}
+
     /* Sidebar Premium (Glassmorphism) */
     [data-testid="stSidebar"] {{
         background: rgba(10, 10, 10, 0.4) !important;
@@ -67,9 +97,7 @@ if img:
         transition: 0.3s;
     }}
 
-    /* --- INÍCIO DO NOVO CÓDIGO GLASSMORPHISM --- */
-    
-    /* Glassmorphism para o formulário de login */
+    /* Formulário de login */
     [data-testid="stForm"] {{
         background: rgba(10, 10, 10, 0.4) !important;
         backdrop-filter: blur(20px) !important;
@@ -78,14 +106,27 @@ if img:
         padding: 30px !important;
     }}
 
-    /* Ajuste das caixas de input dentro do login */
     [data-testid="stForm"] input {{
         background: rgba(255, 255, 255, 0.05) !important;
         border: 1px solid rgba(255, 255, 255, 0.1) !important;
         color: white !important;
     }}
 
-    /* --- FIM DO NOVO CÓDIGO --- */
+    /* ALERTA (Transparência Forçada) */
+    [data-testid="stAlert"] {{
+        background: transparent !important;
+        border: none !important;
+    }}
+    [data-testid="stAlert"] > div {{
+        background: rgba(10, 10, 10, 0.4) !important;
+        backdrop-filter: blur(20px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 15px !important;
+        color: white !important;
+    }}
+    [data-testid="stAlert"] [data-testid="stIcon"] {{
+        display: none;
+    }}
 
     /* Botões Principais (Página) */
     .stButton > button {{
@@ -103,18 +144,39 @@ if img:
 def custom_label(texto):
     st.markdown(f'<p style="color: white; font-size: 20px; font-weight: bold; margin-bottom: 5px;">{texto}</p>', unsafe_allow_html=True)
 
+@st.cache_data(ttl=300)
 def get_market_data():
     tickers = {
-        'VIX': '^VIX', 'FEF2': 'FEF=F', 'CL1': 'CL=F', 'DI1F29': 'DI1F29.SA',
+        'VIX': '^VIX', 'CL1': 'CL=F', 'DI1F29': 'DI1F29.SA',
         'VALE': 'VALE3.SA', 'PBR': 'PBR', 'ITUB': 'ITUB4.SA', 'BDORY': 'BDORY', 
         'BBD': 'BBD', 'BOLSY': 'BOLSY', 'BRENT': 'BZ=F', 'EWZ': 'EWZ'
     }
-    data = yf.download(list(tickers.values()), period='2d')['Close']
     variacoes = {}
-    for nome, ticker in tickers.items():
-        atual = data[ticker].iloc[-1]
-        anterior = data[ticker].iloc[-2]
-        variacoes[nome] = round(((atual / anterior) - 1) * 100, 2)
+    
+    try:
+        data = yf.download(list(tickers.values()), period='5d', group_by='ticker', threads=True)
+        
+        if data.empty:
+            return {nome: 0.0 for nome in tickers}
+        
+        for nome, ticker in tickers.items():
+            try:
+                if isinstance(data.columns, pd.MultiIndex):
+                    df_ativo = data[ticker]['Close'].dropna()
+                else:
+                    df_ativo = data['Close'][ticker].dropna()
+                
+                if len(df_ativo) >= 2:
+                    atual = float(df_ativo.iloc[-1])
+                    anterior = float(df_ativo.iloc[-2])
+                    variacoes[nome] = round(((atual / anterior) - 1) * 100, 2)
+                else:
+                    variacoes[nome] = 0.0
+            except:
+                variacoes[nome] = 0.0
+    except:
+        return {nome: 0.0 for nome in tickers}
+        
     return variacoes
 
 def criar_esfera(x_c, y_c, z_c, r):
@@ -126,7 +188,6 @@ def criar_esfera(x_c, y_c, z_c, r):
     return x, y, z
 
 def render_gps_mercado():
-    # Incrementa a rotação
     st.session_state.camera_angle += 0.02
     raio_camera = 1.6
     cam_x = raio_camera * math.sin(st.session_state.camera_angle)
@@ -135,14 +196,18 @@ def render_gps_mercado():
     dados = get_market_data()
     ativos, variacoes = list(dados.keys()), list(dados.values())
     
-    ativos_em_alta = sum(1 for v in variacoes if v >= 0)
+    ativos_em_alta = sum(1 for v in variacoes if v > 0)
     ativos_em_queda = sum(1 for v in variacoes if v < 0)
     
-    if ativos_em_alta > 4: cor_centro = '#00ff66'
-    elif ativos_em_queda > 4: cor_centro = '#ff3333'
+    if ativos_em_queda > 4: cor_centro = '#ff3333'
+    elif ativos_em_alta > 4: cor_centro = '#00ff66'
     else: cor_centro = '#ffcc00'
     
-    cores = ['#00ff66' if v >= 0 else '#ff3333' for v in variacoes]
+    cores = []
+    for v in variacoes:
+        if v > 0: cores.append('#00ff66')
+        elif v < 0: cores.append('#ff3333')
+        else: cores.append('#808080')
     
     fig = go.Figure()
     
@@ -163,6 +228,7 @@ def render_gps_mercado():
 
     theta = np.linspace(0, 2*np.pi, len(ativos), endpoint=False)
     raio_planeta = 1.3
+    
     for i in range(len(ativos)):
         x_p = raio_orbita * np.cos(theta[i])
         y_p = raio_orbita * np.sin(theta[i])
@@ -170,12 +236,22 @@ def render_gps_mercado():
         x_esf, y_esf, z_esf = criar_esfera(x_p, y_p, z_p, raio_planeta)
         
         fig.add_trace(go.Surface(x=x_esf, y=y_esf, z=z_esf, colorscale=[[0, cores[i]], [1, cores[i]]], showscale=False, lighting=dict(ambient=0.3, diffuse=0.9, roughness=0.6, specular=0.4), lightposition=dict(x=0, y=0, z=0), hoverinfo='none'))
-        fig.add_trace(go.Scatter3d(x=[x_p], y=[y_p], z=[z_p - (raio_planeta * 1.8)], mode='text', text=[f"<b>{ativos[i]}</b><br>{variacoes[i]}%"], textfont=dict(color='white', size=13), showlegend=False, hoverinfo='none'))
+        
+        fig.add_trace(go.Scatter3d(
+            x=[x_p], 
+            y=[y_p], 
+            z=[z_p + (raio_planeta * 2.2)], 
+            mode='text', 
+            text=[f"{ativos[i]}    {variacoes[i]}%"], 
+            textfont=dict(color='white', size=13, family="Arial"), 
+            showlegend=False, 
+            hoverinfo='none'
+        ))
 
     raio_sol = 3.5
     x_sol, y_sol, z_sol = criar_esfera(0, 0, 0, raio_sol)
     fig.add_trace(go.Surface(x=x_sol, y=y_sol, z=z_sol, colorscale=[[0, cor_centro], [1, cor_centro]], showscale=False, lighting=dict(ambient=0.4, diffuse=0.6, roughness=0.5, specular=0.2), lightposition=dict(x=10, y=10, z=10), hoverinfo='none'))
-    fig.add_trace(go.Scatter3d(x=[0], y=[0], z=[raio_sol + 2.0], mode='text', text=["<b>WIN1</b>"], textfont=dict(color='white', size=14), showlegend=False, hoverinfo='none'))
+    fig.add_trace(go.Scatter3d(x=[0], y=[0], z=[raio_sol + 2.0], mode='text', text=["WIN1"], textfont=dict(color='white', size=14), showlegend=False, hoverinfo='none'))
 
     camera = dict(up=dict(x=0, y=0, z=1), center=dict(x=0, y=0, z=0), eye=dict(x=cam_x, y=cam_y, z=0.9))
     
@@ -193,20 +269,12 @@ def render_gps_mercado():
         ),
         margin=dict(l=0, r=0, b=0, t=0), 
         height=750
-    )    
+    )   
     st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False}, key="gps_rotativo")
 
 # ==================================================
 # 4. SISTEMA DE AUTENTICAÇÃO E REGISTRO CUSTOMIZADO
 # ==================================================
-try:
-    with open('config.yaml', 'r') as file:
-        config = yaml.load(file, Loader=SafeLoader)
-except FileNotFoundError:
-    st.error("Erro: Arquivo 'config.yaml' não encontrado.")
-    st.stop()
-
-# Inicializa o Autenticador
 authenticator = stauth.Authenticate(
     config['credentials'],
     config['cookie']['name'],
@@ -288,7 +356,9 @@ if st.session_state["authentication_status"] is True:
             st.session_state.modo = None
             st.rerun()
         st_autorefresh(interval=120000, key="gps_refresh")
-        render_gps_mercado()
+        
+        with st.spinner("Sincronizando dados de mercado..."):
+            render_gps_mercado()
     
     if st.session_state.modo is None:
         if img:
@@ -298,8 +368,8 @@ if st.session_state["authentication_status"] is True:
         st.markdown("""
         <div style="background: rgba(15,15,15,0.72); border-radius: 30px; padding: 40px; border: 1px solid rgba(255,255,255,0.08); backdrop-filter: blur(15px);">
         <p style="color:#8b8b8b; letter-spacing:4px; font-size:13px;">ENTRADA MANUAL</p>
-        <h1 style="color:white; font-size:48px;">Há notícia 3⭐ no Brasil às 09h hoje?</h1>
-        <p style="color:#8b8b8b; font-size:18px;">Isso define se o cálculo usa: (-VIX + FEF + CL) ou ADRs.</p>
+        <h1 style="color:white; font-size:48px;">Hoje na abertura, há notícia 3✨ no Brasil às 09h?</h1>
+        <p style="color:#8b8b8b; font-size:18px;">Selecione a lógica de cálculo usada para o cenário atual: (-VIX + FEF + CL) ou ADRs.</p>
         </div>
         """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
@@ -379,15 +449,33 @@ if st.session_state["authentication_status"] is True:
         if st.button("Gerar leitura", key="gerar_leitura_adr", use_container_width=True):
             v_vale, v_itub, v_bbd = vale or 0.0, itub or 0.0, bbd or 0.0
             v_pbr, v_bdory, v_bolsy = pbr or 0.0, bdory or 0.0, bolsy or 0.0
-            resultado = v_vale + v_pbr + v_itub + v_bdory + v_bbd + v_bolsy
-            forca = min(abs(resultado) * 20, 100)
-            if resultado >= 4.5: classificacao, fluxo, vies = "COMPRA FORTE", "FLUXO COMPRADOR", "VIÉS COMPRADOR"
-            elif resultado >= 2.5: classificacao, fluxo, vies = "COMPRA MODERADA", "FLUXO COMPRADOR", "VIÉS COMPRADOR"
-            elif resultado >= 1.5: classificacao, fluxo, vies = "COMPRA LEVE", "FLUXO COMPRADOR", "VIÉS COMPRADOR"
-            elif resultado <= -4.5: classificacao, fluxo, vies = "VENDA FORTE", "FLUXO VENDEDOR", "VIÉS VENDEDOR"
-            elif resultado <= -2.5: classificacao, fluxo, vies = "VENDA MODERADA", "FLUXO VENDEDOR", "VIÉS VENDEDOR"
-            elif resultado <= -1.5: classificacao, fluxo, vies = "VENDA LEVE", "FLUXO VENDEDOR", "VIÉS VENDEDOR"
-            else: classificacao, fluxo, vies = "LATERAL", "FLUXO INDEFINIDO", "MERCADO LATERAL"
+            
+            adr_data = {"VALE": v_vale, "PBR": v_pbr, "ITUB": v_itub, "BDORY": v_bdory, "BBD": v_bbd, "BOLSY": v_bolsy}
+            ativos_pos = [k for k, v in adr_data.items() if v > 0]
+            ativos_neg = [k for k, v in adr_data.items() if v < 0]
+            
+            resultado = sum(adr_data.values())
+            
+            confluence_display = ""
+            
+            if len(ativos_pos) >= 4:
+                classificacao, fluxo, vies = "COMPRA FORTE (CONFLUÊNCIA)", "FLUXO COMPRADOR", "VIÉS COMPRADOR"
+                forca = 100
+                confluence_display = f"ALINHAMENTO: {', '.join(ativos_pos)}"
+            elif len(ativos_neg) >= 4:
+                classificacao, fluxo, vies = "VENDA FORTE (CONFLUÊNCIA)", "FLUXO VENDEDOR", "VIÉS VENDEDOR"
+                forca = 100
+                confluence_display = f"ALINHAMENTO: {', '.join(ativos_neg)}"
+            else:
+                forca = min(abs(resultado) * 20, 100)
+                if resultado >= 4.5: classificacao, fluxo, vies = "COMPRA FORTE", "FLUXO COMPRADOR", "VIÉS COMPRADOR"
+                elif resultado >= 2.5: classificacao, fluxo, vies = "COMPRA MODERADA", "FLUXO COMPRADOR", "VIÉS COMPRADOR"
+                elif resultado >= 1.5: classificacao, fluxo, vies = "COMPRA LEVE", "FLUXO COMPRADOR", "VIÉS COMPRADOR"
+                elif resultado <= -4.5: classificacao, fluxo, vies = "VENDA FORTE", "FLUXO VENDEDOR", "VIÉS VENDEDOR"
+                elif resultado <= -2.5: classificacao, fluxo, vies = "VENDA MODERADA", "FLUXO VENDEDOR", "VIÉS VENDEDOR"
+                elif resultado <= -1.5: classificacao, fluxo, vies = "VENDA LEVE", "FLUXO VENDEDOR", "VIÉS VENDEDOR"
+                else: classificacao, fluxo, vies = "LATERAL", "FLUXO INDEFINIDO", "MERCADO LATERAL"
+            
             st.markdown(f"""
             <div style="background: rgba(10,10,10,0.82); border-radius: 30px; padding: 50px; text-align:center; border:1px solid rgba(255,255,255,0.08);">
                 <h3 style="color:#9ca3af; letter-spacing:5px;">RESULTADO</h3>
@@ -396,6 +484,7 @@ if st.session_state["authentication_status"] is True:
                 <h3 style="color:white;">{classificacao}</h3>
                 <h4 style="color:#9ca3af;">FORÇA: {round(forca)}%</h4>
                 <h4 style="color:#9ca3af;">{fluxo}</h4>
+                <p style="color:#00d5ff; font-size:14px; margin-top:10px;">{confluence_display}</p>
             </div>
             """, unsafe_allow_html=True)
         st.markdown("<br>", unsafe_allow_html=True)
