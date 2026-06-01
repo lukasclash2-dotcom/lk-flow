@@ -1,6 +1,9 @@
+streamlit
 yfinance
 plotly
+numpy
 pandas
 streamlit-autorefresh
-streamlit-authenticator
 pyyaml
+streamlit-authenticator
+streamlit-js-eval
